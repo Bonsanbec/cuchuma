@@ -1,0 +1,300 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleLevel {
+  CONTRIBUTOR
+  MEMBER
+  ADMIN
+}
+
+enum ContentStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ContributionType {
+  MEMORY
+  EVIDENCE
+}
+
+enum MediaKind {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+}
+
+enum FieldType {
+  SHORT_TEXT
+  LONG_TEXT
+  EMAIL
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  ATTACHMENT
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  name           String
+  passwordHash   String
+  roleId         String
+  role           Role            @relation(fields: [roleId], references: [id])
+  suspended      Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  sessions       Session[]
+  contributions  Contribution[]
+  media          MediaFile[]
+  articles       Article[]
+  reflections    Reflection[]
+  forms          CitizenForm[]
+  surveys        Survey[]
+  collections    Collection[]
+  auditLogs      AuditLog[]      @relation("ActorAuditLogs")
+  reviewedItems  Contribution[]  @relation("ReviewedContributions")
+  resetTokens     PasswordResetToken[]
+}
+
+model Role {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  level       RoleLevel @unique
+  description String
+  users       User[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id            String         @id @default(cuid())
+  name          String         @unique
+  slug          String         @unique
+  description   String?
+  contributions Contribution[]
+  articles      Article[]
+  reflections   Reflection[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Contribution {
+  id            String            @id @default(cuid())
+  title         String
+  slug          String            @unique
+  type          ContributionType
+  body          String
+  externalLinks String[]          @default([])
+  status        ContentStatus     @default(PENDING)
+  rejectionNote String?
+  authorId      String
+  author        User              @relation(fields: [authorId], references: [id])
+  reviewerId    String?
+  reviewer      User?             @relation("ReviewedContributions", fields: [reviewerId], references: [id])
+  categoryId    String?
+  category      Category?         @relation(fields: [categoryId], references: [id])
+  media         MediaFile[]
+  collections   CollectionItem[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  publishedAt   DateTime?
+}
+
+model MediaFile {
+  id              String          @id @default(cuid())
+  title           String
+  description     String?
+  kind            MediaKind
+  mimeType        String
+  sizeBytes       Int
+  storageKey      String
+  publicUrl       String
+  originalName    String
+  altText         String?
+  authorId        String
+  author          User            @relation(fields: [authorId], references: [id])
+  contributionId  String?
+  contribution    Contribution?   @relation(fields: [contributionId], references: [id], onDelete: SetNull)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model Article {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  outlet      String
+  authorName  String?
+  publishedOn DateTime
+  url         String
+  summary     String
+  status      ContentStatus @default(PENDING)
+  createdById String
+  createdBy   User          @relation(fields: [createdById], references: [id])
+  categoryId  String?
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Reflection {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  body        String
+  status      ContentStatus @default(PENDING)
+  createdById String
+  createdBy   User          @relation(fields: [createdById], references: [id])
+  categoryId  String?
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  publishedAt DateTime?
+}
+
+model Collection {
+  id          String           @id @default(cuid())
+  title       String
+  slug        String           @unique
+  description String
+  published   Boolean          @default(true)
+  createdById String
+  createdBy   User             @relation(fields: [createdById], references: [id])
+  items       CollectionItem[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model CollectionItem {
+  id             String       @id @default(cuid())
+  collectionId   String
+  collection     Collection   @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  contributionId String
+  contribution   Contribution @relation(fields: [contributionId], references: [id], onDelete: Cascade)
+  position       Int          @default(0)
+
+  @@unique([collectionId, contributionId])
+}
+
+model CitizenForm {
+  id          String           @id @default(cuid())
+  title       String
+  slug        String           @unique
+  description String
+  active      Boolean          @default(true)
+  createdById String
+  createdBy   User             @relation(fields: [createdById], references: [id])
+  fields      FormField[]
+  responses   FormResponse[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model FormField {
+  id        String      @id @default(cuid())
+  formId    String
+  form      CitizenForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+  label     String
+  type      FieldType
+  required  Boolean     @default(false)
+  options   String[]     @default([])
+  position  Int          @default(0)
+}
+
+model FormResponse {
+  id        String      @id @default(cuid())
+  formId    String
+  form      CitizenForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+  values    Json
+  createdAt DateTime    @default(now())
+}
+
+model Survey {
+  id              String           @id @default(cuid())
+  title           String
+  slug            String           @unique
+  question        String
+  options         SurveyOption[]
+  resultsPublic   Boolean          @default(true)
+  active          Boolean          @default(true)
+  createdById     String
+  createdBy       User             @relation(fields: [createdById], references: [id])
+  responses       SurveyResponse[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model SurveyOption {
+  id        String           @id @default(cuid())
+  surveyId  String
+  survey    Survey           @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  label     String
+  position  Int              @default(0)
+  responses SurveyResponse[]
+}
+
+model SurveyResponse {
+  id        String       @id @default(cuid())
+  surveyId  String
+  survey    Survey       @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  optionId  String
+  option    SurveyOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+  ipHash    String?
+}
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model MenuItem {
+  id        String   @id @default(cuid())
+  label     String
+  href      String
+  position  Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation("ActorAuditLogs", fields: [actorId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}

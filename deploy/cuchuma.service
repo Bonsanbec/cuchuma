@@ -1,0 +1,18 @@
+[Unit]
+Description=Portal de Defensa y Documentación de El Cuchumá
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/cuchuma
+Environment=NODE_ENV=production
+Environment=PORT=3000
+EnvironmentFile=/var/www/cuchuma/.env
+ExecStart=/usr/bin/node build
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
