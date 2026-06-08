@@ -4,10 +4,10 @@ After=network.target postgresql.service
 
 [Service]
 Type=simple
-WorkingDirectory=/var/www/cuchuma
+WorkingDirectory=/opt/cuchuma
 Environment=NODE_ENV=production
 Environment=PORT=3000
-EnvironmentFile=/var/www/cuchuma/.env
+EnvironmentFile=/opt/cuchuma/.env
 ExecStart=/usr/bin/node build
 Restart=always
 RestartSec=5
