@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_DIR="${APP_DIR:-/var/www/cuchuma}"
+APP_DIR="${APP_DIR:-/opt/cuchuma}"
 SERVICE="${SERVICE:-cuchuma}"
 
 cd "$APP_DIR"
