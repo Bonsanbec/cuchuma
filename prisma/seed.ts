@@ -77,8 +77,8 @@ async function main() {
       key: 'home',
       value: {
         causeName: 'Defensa y documentación de El Cuchumá',
-        heroImageUrl: '/site/cuchuma-documental.svg',
-        heroImageAlt: 'Imagen documental de El Cuchumá configurada por el portal',
+        heroImageUrl: '/identity/kuchumá.png',
+        heroImageAlt: 'Silueta de El Cuchumá',
         problemSummary:
           'Portal ciudadano para reunir evidencias, recuerdos, notas, documentos y participación pública sobre El Cuchumá.',
         callToAction: 'Consulta el archivo, participa y ayuda a documentar.'

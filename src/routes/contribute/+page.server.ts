@@ -46,6 +46,6 @@ export const actions = {
       });
     }
     await audit({ actorId: event.locals.user.id, action: 'create_pending', entity: 'contribution', entityId: contribution.id, ipAddress: event.getClientAddress() });
-    return { message: 'Contribución recibida y pendiente de moderación.' };
+    return { message: 'Gracias. El equipo revisará tu material antes de publicarlo.' };
   }
 };

@@ -4,10 +4,16 @@
 
 <main>
   {#if data.form}
-    <h1>{data.form.title}</h1>
-    <p class="lead">{data.form.description}</p>
+    <section class="story-hero" aria-labelledby="form-title">
+      <div>
+        <p class="eyebrow">Acción abierta</p>
+        <h1 id="form-title">{data.form.title}</h1>
+        <p class="lead">{data.form.description}</p>
+      </div>
+      <img class="hero-mark" src="/identity/kuchumá.png" alt="Silueta de El Cuchumá" />
+    </section>
     {#if form?.message}<p class="notice">{form.message}</p>{/if}
-    <form class="form-stack" method="POST" enctype="multipart/form-data">
+    <form class="form-stack document-panel" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="csrf" value={data.csrf} />
       {#each data.form.fields as field}
         <label>{field.label}
@@ -34,6 +40,6 @@
       <button type="submit">Enviar</button>
     </form>
   {:else}
-    <h1>Formulario no disponible</h1>
+    <h1>Acción no disponible</h1>
   {/if}
 </main>

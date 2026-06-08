@@ -5,10 +5,16 @@
 
 <main>
   {#if data.survey}
-    <h1>{data.survey.title}</h1>
-    <p class="lead">{data.survey.question}</p>
+    <section class="story-hero" aria-labelledby="survey-title">
+      <div>
+        <p class="eyebrow">Pregunta comunitaria</p>
+        <h1 id="survey-title">{data.survey.title}</h1>
+        <p class="lead">{data.survey.question}</p>
+      </div>
+      <img class="hero-mark" src="/identity/kuchumá.png" alt="Silueta de El Cuchumá" />
+    </section>
     {#if form?.message}<p class="notice">{form.message}</p>{/if}
-    <form class="form-stack" method="POST">
+    <form class="form-stack document-panel" method="POST">
       <input type="hidden" name="csrf" value={data.csrf} />
       {#each data.survey.options as option}
         <label>
@@ -21,6 +27,6 @@
       <button type="submit">Votar</button>
     </form>
   {:else}
-    <h1>Encuesta no disponible</h1>
+    <h1>Pregunta no disponible</h1>
   {/if}
 </main>

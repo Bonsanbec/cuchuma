@@ -10,8 +10,8 @@ export type HomeSettings = {
 
 const defaults: HomeSettings = {
   causeName: 'Defensa y documentación de El Cuchumá',
-  heroImageUrl: '/site/cuchuma-documental.svg',
-  heroImageAlt: 'Vista documental de El Cuchumá',
+  heroImageUrl: '/identity/kuchumá.png',
+  heroImageAlt: 'Silueta de El Cuchumá',
   problemSummary:
     'Archivo ciudadano para reunir evidencias, memorias, notas periodísticas y participación pública sobre El Cuchumá.',
   callToAction: 'Consulta, comparte y ayuda a documentar lo que ocurre.'

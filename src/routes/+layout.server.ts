@@ -1,7 +1,7 @@
 import { prisma } from '$lib/db/prisma';
 import { getHomeSettings } from '$lib/cms/site';
 
-export async function load({ locals }) {
+export async function load({ locals, url }) {
   const [menu, site] = await Promise.all([
     prisma.menuItem.findMany({ where: { visible: true }, orderBy: { position: 'asc' } }),
     getHomeSettings()
@@ -10,6 +10,7 @@ export async function load({ locals }) {
     user: locals.user,
     csrf: locals.csrf,
     menu,
-    site
+    site,
+    pathname: url.pathname
   };
 }

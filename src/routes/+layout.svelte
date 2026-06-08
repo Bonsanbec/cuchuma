@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../styles.css';
   let { data, children } = $props();
+  let isAdmin = $derived(data.pathname.startsWith('/admin'));
 </script>
 
 <svelte:head>
@@ -9,23 +10,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </svelte:head>
 
-<div class="shell">
-  <header class="topbar">
-    <a class="brand" href="/" aria-label="Ir a la portada">{data.site.causeName}</a>
-    <nav aria-label="Navegación principal">
-      {#each data.menu as item}
-        <a href={item.href}>{item.label}</a>
-      {/each}
-      {#if data.user}
-        <a href="/admin">Admin</a>
-        <form method="POST" action="/logout">
-          <input type="hidden" name="csrf" value={data.csrf} />
-          <button type="submit">Salir</button>
-        </form>
-      {:else}
-        <a href="/login">Entrar</a>
-      {/if}
-    </nav>
+<div class:admin-shell={isAdmin} class="shell">
+  <header class:admin-topbar={isAdmin} class="topbar">
+    <a class="brand" href="/" aria-label="Ir a la portada">
+      <img src="/identity/kuchumá.png" alt="" />
+      <span>El Cuchumá</span>
+    </a>
+    {#if isAdmin}
+      <nav aria-label="Navegación administrativa">
+        <a href="/">Sitio público</a>
+        <a href="/admin">Panel</a>
+        {#if data.user}
+          <form method="POST" action="/logout">
+            <input type="hidden" name="csrf" value={data.csrf} />
+            <button type="submit">Salir</button>
+          </form>
+        {/if}
+      </nav>
+    {:else}
+      <nav aria-label="Navegación pública">
+        <a href="/#que-pasa">Qué pasa</a>
+        <a href="/#por-que-importa">Por qué importa</a>
+        <a href="/archive">Lo documentado</a>
+        <a href="/#memoria">Memoria</a>
+        <a class="nav-action" href="/#ayudar">Ayudar</a>
+      </nav>
+    {/if}
   </header>
   {@render children()}
 </div>

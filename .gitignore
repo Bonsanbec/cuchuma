@@ -6,3 +6,4 @@ build
 static/uploads/*
 !static/uploads/.gitkeep
 *.log
+/identity
