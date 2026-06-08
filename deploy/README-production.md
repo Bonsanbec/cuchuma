@@ -36,7 +36,7 @@ npm run init
 ```bash
 sudo cp deploy/cuchuma.service /etc/systemd/system/cuchuma.service
 sudo systemctl enable --now cuchuma
-sudo cp deploy/apache-cuchuma.conf /etc/apache2/sites-available/cuchuma.conf
+sudo cp deploy/apache-cuchuma.conf /etc/apache2/sites-available/cuchuma.bonsanbec.dev.conf
 sudo a2enmod proxy proxy_http headers rewrite ssl
 sudo a2ensite cuchuma
 sudo certbot --apache -d cuchuma.bonsanbec.dev
