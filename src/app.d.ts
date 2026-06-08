@@ -15,8 +15,10 @@ declare global {
     interface PageData {
       user?: App.Locals['user'];
       csrf?: string;
+      dictionary?: Record<string, any>;
     }
   }
 }
 
 export {};
+

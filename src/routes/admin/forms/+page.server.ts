@@ -21,7 +21,7 @@ export const actions = {
     const data = await event.request.formData();
     assertCsrf(event, data);
     const title = cleanText(data.get('title'));
-    if (!title) return fail(400, { message: 'El formulario necesita título.' });
+    if (!title) return fail(400, { message: 'errors.fillAllFields' });
     const labels = data.getAll('fieldLabel').map(cleanText).filter(Boolean);
     const types = data.getAll('fieldType').map(cleanText);
     const required = new Set(data.getAll('required').map(cleanText));
@@ -45,7 +45,7 @@ export const actions = {
       }
     });
     await audit({ actorId: event.locals.user.id, action: 'create', entity: 'form', entityId: form.id, ipAddress: event.getClientAddress() });
-    return { message: 'Formulario creado.' };
+    return { message: 'notifications.saved' };
   },
   toggle: async (event) => {
     if (!canModerate(event.locals.user?.role.level)) throw redirect(303, '/admin');
@@ -53,6 +53,6 @@ export const actions = {
     assertCsrf(event, data);
     const form = await prisma.citizenForm.update({ where: { id: cleanText(data.get('id')) }, data: { active: data.get('active') === 'on' } });
     await audit({ actorId: event.locals.user?.id, action: 'toggle', entity: 'form', entityId: form.id, ipAddress: event.getClientAddress() });
-    return { message: 'Formulario actualizado.' };
+    return { message: 'notifications.updated' };
   }
 };

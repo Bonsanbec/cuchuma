@@ -24,10 +24,10 @@ export const actions = {
     const name = cleanText(data.get('name'));
     const password = cleanText(data.get('password'));
     const roleId = cleanText(data.get('roleId'));
-    if (!email || !name || password.length < 12 || !roleId) return fail(400, { message: 'Datos de usuario incompletos.' });
+    if (!email || !name || password.length < 12 || !roleId) return fail(400, { message: 'errors.fillAllFields' });
     const user = await prisma.user.create({ data: { email, name, roleId, passwordHash: await hashPassword(password) } });
     await audit({ actorId: event.locals.user?.id, action: 'create', entity: 'user', entityId: user.id, ipAddress: event.getClientAddress() });
-    return { message: 'Usuario creado.' };
+    return { message: 'notifications.saved' };
   },
   update: async (event) => {
     if (!canAdmin(event.locals.user?.role.level)) throw redirect(303, '/admin');
@@ -43,6 +43,6 @@ export const actions = {
       }
     });
     await audit({ actorId: event.locals.user?.id, action: 'update', entity: 'user', entityId: user.id, ipAddress: event.getClientAddress() });
-    return { message: 'Usuario actualizado.' };
+    return { message: 'notifications.updated' };
   }
 };

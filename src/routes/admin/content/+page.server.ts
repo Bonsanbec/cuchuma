@@ -22,7 +22,7 @@ export const actions = {
     const data = await event.request.formData();
     assertCsrf(event, data);
     const status = cleanText(data.get('status'));
-    if (!['APPROVED', 'REJECTED'].includes(status)) return fail(400, { message: 'Estado inválido.' });
+    if (!['APPROVED', 'REJECTED'].includes(status)) return fail(400, { message: 'errors.invalidStatus' });
     const entity = cleanText(data.get('entity'));
     const id = cleanText(data.get('id'));
     const update = { status: status as 'APPROVED' | 'REJECTED', publishedAt: status === 'APPROVED' ? new Date() : null };
@@ -33,31 +33,31 @@ export const actions = {
     } else if (entity === 'reflection') {
       await prisma.reflection.update({ where: { id }, data: update });
     } else {
-      return fail(400, { message: 'Entidad inválida.' });
+      return fail(400, { message: 'errors.invalidEntity' });
     }
     await audit({ actorId: event.locals.user?.id, action: status.toLowerCase(), entity, entityId: id, ipAddress: event.getClientAddress() });
-    return { message: 'Contenido actualizado.' };
+    return { message: 'notifications.updated' };
   },
   category: async (event) => {
     if (!canModerate(event.locals.user?.role.level)) throw redirect(303, '/admin');
     const data = await event.request.formData();
     assertCsrf(event, data);
     const name = cleanText(data.get('name'));
-    if (!name) return fail(400, { message: 'La categoría necesita nombre.' });
+    if (!name) return fail(400, { message: 'errors.fillAllFields' });
     const category = await prisma.category.upsert({
       where: { slug: slugify(name) },
       update: { description: cleanText(data.get('description')) || null },
       create: { name, slug: slugify(name), description: cleanText(data.get('description')) || null }
     });
     await audit({ actorId: event.locals.user?.id, action: 'upsert', entity: 'category', entityId: category.id, ipAddress: event.getClientAddress() });
-    return { message: 'Categoría guardada.' };
+    return { message: 'notifications.saved' };
   },
   article: async (event) => {
     if (!event.locals.user) throw redirect(303, '/login');
     const data = await event.request.formData();
     assertCsrf(event, data);
     const title = cleanText(data.get('title'));
-    if (!title) return fail(400, { message: 'La nota necesita título.' });
+    if (!title) return fail(400, { message: 'errors.fillAllFields' });
     const article = await prisma.article.create({
       data: {
         title,
@@ -73,14 +73,14 @@ export const actions = {
       }
     });
     await audit({ actorId: event.locals.user.id, action: 'create', entity: 'article', entityId: article.id, ipAddress: event.getClientAddress() });
-    return { message: 'Nota guardada.' };
+    return { message: 'notifications.saved' };
   },
   reflection: async (event) => {
     if (!event.locals.user) throw redirect(303, '/login');
     const data = await event.request.formData();
     assertCsrf(event, data);
     const title = cleanText(data.get('title'));
-    if (!title) return fail(400, { message: 'La publicación necesita título.' });
+    if (!title) return fail(400, { message: 'errors.fillAllFields' });
     const status = canModerate(event.locals.user.role.level) ? 'APPROVED' : 'PENDING';
     const reflection = await prisma.reflection.create({
       data: {
@@ -94,6 +94,6 @@ export const actions = {
       }
     });
     await audit({ actorId: event.locals.user.id, action: 'create', entity: 'reflection', entityId: reflection.id, ipAddress: event.getClientAddress() });
-    return { message: 'Publicación guardada.' };
+    return { message: 'notifications.saved' };
   }
 };

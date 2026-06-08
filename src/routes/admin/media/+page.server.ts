@@ -17,7 +17,7 @@ export const actions = {
     const data = await event.request.formData();
     assertCsrf(event, data);
     const file = data.get('file');
-    if (!(file instanceof File) || file.size === 0) return fail(400, { message: 'Selecciona un archivo.' });
+    if (!(file instanceof File) || file.size === 0) return fail(400, { message: 'errors.fillAllFields' });
     const saved = await saveUpload(file);
     const media = await prisma.mediaFile.create({
       data: {
@@ -29,6 +29,6 @@ export const actions = {
       }
     });
     await audit({ actorId: event.locals.user.id, action: 'upload', entity: 'media', entityId: media.id, ipAddress: event.getClientAddress() });
-    return { message: 'Archivo cargado.' };
+    return { message: 'notifications.saved' };
   }
 };

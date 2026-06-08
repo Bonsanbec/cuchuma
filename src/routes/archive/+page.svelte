@@ -1,44 +1,45 @@
 <script lang="ts">
+  import { t } from '$lib/i18n';
   let { data } = $props();
 </script>
 
 <main>
   <section class="story-hero" aria-labelledby="archive-title">
     <div>
-      <p class="eyebrow">Archivo vivo de El Cuchumá</p>
-      <h1 id="archive-title">Lo documentado no empieza en un buscador.</h1>
-      <p class="lead">Empieza con una pregunta sencilla: qué se sabe, quién lo recuerda y qué material existe para sostener esa memoria.</p>
+      <p class="eyebrow">{$t('archive.eyebrow')}</p>
+      <h1 id="archive-title">{$t('archive.title')}</h1>
+      <p class="lead">{$t('archive.lead')}</p>
       <div class="hero-actions">
-        <a class="button" href="#linea-tiempo">Ver cronología</a>
-        <a class="button secondary" href="#recorridos">Explorar recorridos</a>
+        <a class="button" href="#linea-tiempo">{$t('archive.viewTimeline')}</a>
+        <a class="button secondary" href="#recorridos">{$t('archive.explorePaths')}</a>
       </div>
     </div>
-    <img class="hero-mark" src="/identity/kuchumá.png" alt="Silueta de El Cuchumá" />
+    <img class="hero-mark" src="/identity/kuchumá.png" alt={$t('cms.heroImageAlt')} />
   </section>
 
   <section class="section" id="recorridos" aria-labelledby="routes-title">
-    <p class="eyebrow">Recorridos para empezar</p>
-    <h2 id="routes-title">Entrar por historias.</h2>
+    <p class="eyebrow">{$t('archive.pathsToStart')}</p>
+    <h2 id="routes-title">{$t('archive.enterByStories')}</h2>
     <div class="story-grid">
       {#each data.collections as collection}
         <a class="story-panel" href={`/collections/${collection.slug}`}>
-          <p class="meta">{collection.items.length} registros relacionados</p>
+          <p class="meta">{$t('archive.relatedRecords', { count: collection.items.length })}</p>
           <h3>{collection.title}</h3>
           <p>{collection.description}</p>
         </a>
       {:else}
         <article class="story-panel">
-          <p class="meta">Archivo en organización</p>
-          <h3>Las rutas temáticas aparecerán conforme el equipo las publique.</h3>
-          <p>Mientras tanto, la cronología permite leer el material aprobado más reciente.</p>
+          <p class="meta">{$t('archive.organizingArchive')}</p>
+          <h3>{$t('archive.organizingArchiveTitle')}</h3>
+          <p>{$t('archive.organizingArchiveDesc')}</p>
         </article>
       {/each}
     </div>
   </section>
 
   <section class="section" id="linea-tiempo" aria-labelledby="timeline-title">
-    <p class="eyebrow">Qué está ocurriendo ahora</p>
-    <h2 id="timeline-title">Cronología pública.</h2>
+    <p class="eyebrow">{$t('archive.currentHappening')}</p>
+    <h2 id="timeline-title">{$t('archive.publicTimeline')}</h2>
     <div class="timeline">
       {#each data.timeline as item}
         <article>
@@ -47,30 +48,30 @@
           <p>{@html item.text}</p>
         </article>
       {:else}
-        <p class="notice">Todavía no hay registros públicos aprobados.</p>
+        <p class="notice">{$t('archive.noPublicApproved')}</p>
       {/each}
     </div>
   </section>
 
   <section class="section" aria-labelledby="memory-title">
-    <p class="eyebrow">Memoria oral y escrita</p>
-    <h2 id="memory-title">Lo que las personas han querido conservar.</h2>
+    <p class="eyebrow">{$t('archive.oralAndWrittenMemory')}</p>
+    <h2 id="memory-title">{$t('archive.whatPeopleSaved')}</h2>
     <div class="memory-grid">
       {#each data.memories as memory}
         <article class="memory-panel">
-          <p class="meta">{memory.category?.name ?? 'Memoria'}</p>
+          <p class="meta">{memory.category?.name ?? $t('archive.memoryCategory')}</p>
           <h3>{memory.title}</h3>
           <p>{@html memory.body}</p>
         </article>
       {:else}
-        <p class="notice">Los testimonios aprobados aparecerán en esta sección.</p>
+        <p class="notice">{$t('archive.noTestimonies')}</p>
       {/each}
     </div>
   </section>
 
   <section class="section" aria-labelledby="visual-title">
-    <p class="eyebrow">Material visible</p>
-    <h2 id="visual-title">Fragmentos del archivo.</h2>
+    <p class="eyebrow">{$t('archive.visibleMaterial')}</p>
+    <h2 id="visual-title">{$t('archive.archiveFragments')}</h2>
     <div class="story-grid">
       {#each data.media.slice(0, 9) as file}
         <article class="document-panel">
@@ -81,42 +82,43 @@
           {:else if file.kind === 'AUDIO'}
             <audio src={file.publicUrl} controls></audio>
           {:else}
-            <a class="button secondary" href={file.publicUrl} target="_blank" rel="noreferrer">Abrir documento</a>
+            <a class="button secondary" href={file.publicUrl} target="_blank" rel="noreferrer">{$t('archive.openDocument')}</a>
           {/if}
           <h3>{file.title}</h3>
           <p class="meta">{new Date(file.createdAt).toLocaleDateString('es-MX')}</p>
         </article>
       {:else}
-        <p class="notice">Aún no hay material multimedia publicado.</p>
+        <p class="notice">{$t('archive.noMedia')}</p>
       {/each}
     </div>
   </section>
 
   <details class="quiet-search">
-    <summary>Buscar con más precisión</summary>
+    <summary>{$t('archive.preciseSearch')}</summary>
     <form class="filters" method="GET">
-      <label>Palabras clave
+      <label>{$t('archive.keywords')}
         <input name="q" value={data.filters.q ?? ''} />
       </label>
-      <label>Enfoque
+      <label>{$t('archive.focus')}
         <select name="type">
-          <option value="">Todo</option>
-          <option value="EVIDENCE" selected={data.filters.type === 'EVIDENCE'}>Documentación</option>
-          <option value="MEMORY" selected={data.filters.type === 'MEMORY'}>Memoria</option>
+          <option value="">{$t('archive.all')}</option>
+          <option value="EVIDENCE" selected={data.filters.type === 'EVIDENCE'}>{$t('archive.documentation')}</option>
+          <option value="MEMORY" selected={data.filters.type === 'MEMORY'}>{$t('archive.memoryCategory')}</option>
         </select>
       </label>
-      <label>Tema
+      <label>{$t('archive.theme')}
         <select name="category">
-          <option value="">Todos</option>
+          <option value="">{$t('archive.allThemes')}</option>
           {#each data.categories as category}
             <option value={category.id} selected={data.filters.category === category.id}>{category.name}</option>
           {/each}
         </select>
       </label>
-      <label>Desde
+      <label>{$t('archive.since')}
         <input type="date" name="from" value={data.filters.from ?? ''} />
       </label>
-      <button type="submit">Buscar</button>
+      <button type="submit">{$t('archive.searchButton')}</button>
     </form>
   </details>
 </main>
+

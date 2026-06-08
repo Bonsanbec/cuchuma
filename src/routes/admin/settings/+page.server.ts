@@ -28,11 +28,11 @@ export const actions = {
       callToAction: cleanText(data.get('callToAction'))
     };
     if (!home.causeName || !home.heroImageUrl || !home.problemSummary || !home.callToAction) {
-      return fail(400, { message: 'Completa la configuración de portada.' });
+      return fail(400, { message: 'errors.homeConfigRequired' });
     }
     await setHomeSettings(home);
     await audit({ actorId: event.locals.user?.id, action: 'update', entity: 'site_settings', entityId: 'home', ipAddress: event.getClientAddress() });
-    return { message: 'Portada actualizada.' };
+    return { message: 'notifications.coverUpdated' };
   },
   menu: async (event) => {
     if (!canAdmin(event.locals.user?.role.level)) throw redirect(303, '/admin');
@@ -45,11 +45,11 @@ export const actions = {
         position: Number(cleanText(data.get('position')) || 0),
         visible: data.get('visible') === 'on'
       };
-    if (!payload.label || !payload.href) return fail(400, { message: 'Completa etiqueta y URL del menú.' });
+    if (!payload.label || !payload.href) return fail(400, { message: 'errors.menuConfigRequired' });
     const item = id
       ? await prisma.menuItem.update({ where: { id }, data: payload })
       : await prisma.menuItem.create({ data: payload });
     await audit({ actorId: event.locals.user?.id, action: 'upsert', entity: 'menu_item', entityId: item.id, ipAddress: event.getClientAddress() });
-    return { message: 'Menú actualizado.' };
+    return { message: 'notifications.menuUpdated' };
   }
 };

@@ -21,7 +21,7 @@ export const actions = {
       where: { slug: event.params.slug },
       include: { fields: true }
     });
-    if (!form || !form.active) return fail(404, { message: 'Formulario no disponible.' });
+    if (!form || !form.active) return fail(404, { message: 'forms.inactive' });
     const values: Record<string, Prisma.InputJsonValue | null> = {};
     for (const field of form.fields) {
       if (field.type === 'MULTIPLE_CHOICE') {
@@ -37,10 +37,10 @@ export const actions = {
       }
       const current = values[field.id];
       if (field.required && (current === null || current === '' || (Array.isArray(current) && current.length === 0))) {
-        return fail(400, { message: `Falta el campo ${field.label}.` });
+        return fail(400, { message: 'errors.missingField', params: { field: field.label } });
       }
     }
     await prisma.formResponse.create({ data: { formId: form.id, values: values as Prisma.InputJsonObject } });
-    return { message: 'Respuesta recibida. Gracias por participar.' };
+    return { message: 'forms.success' };
   }
 };

@@ -19,7 +19,7 @@ export const actions = {
     const body = cleanHtml(cleanText(data.get('body')));
     const type = cleanText(data.get('type'));
     if (!title || !body || !['MEMORY', 'EVIDENCE'].includes(type)) {
-      return fail(400, { message: 'Completa título, tipo y texto.' });
+      return fail(400, { message: 'errors.fillAllFields' });
     }
     const contribution = await prisma.contribution.create({
       data: {
@@ -46,6 +46,7 @@ export const actions = {
       });
     }
     await audit({ actorId: event.locals.user.id, action: 'create_pending', entity: 'contribution', entityId: contribution.id, ipAddress: event.getClientAddress() });
-    return { message: 'Gracias. El equipo revisará tu material antes de publicarlo.' };
+    return { message: 'contributions.successMessage' };
   }
 };
+

@@ -21,7 +21,7 @@ export const actions = {
     assertCsrf(event, data);
     const title = cleanText(data.get('title'));
     const options = cleanText(data.get('options')).split('\n').map((item) => item.trim()).filter(Boolean);
-    if (!title || options.length < 2) return fail(400, { message: 'La encuesta necesita título y al menos dos opciones.' });
+    if (!title || options.length < 2) return fail(400, { message: 'errors.invalidSurveyConfig' });
     const survey = await prisma.survey.create({
       data: {
         title,
@@ -34,7 +34,7 @@ export const actions = {
       }
     });
     await audit({ actorId: event.locals.user.id, action: 'create', entity: 'survey', entityId: survey.id, ipAddress: event.getClientAddress() });
-    return { message: 'Encuesta creada.' };
+    return { message: 'notifications.saved' };
   },
   toggle: async (event) => {
     if (!canModerate(event.locals.user?.role.level)) throw redirect(303, '/admin');
@@ -45,6 +45,6 @@ export const actions = {
       data: { active: data.get('active') === 'on', resultsPublic: data.get('resultsPublic') === 'on' }
     });
     await audit({ actorId: event.locals.user?.id, action: 'toggle', entity: 'survey', entityId: survey.id, ipAddress: event.getClientAddress() });
-    return { message: 'Encuesta actualizada.' };
+    return { message: 'notifications.updated' };
   }
 };

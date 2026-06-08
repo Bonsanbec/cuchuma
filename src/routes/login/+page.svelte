@@ -1,22 +1,24 @@
 <script lang="ts">
+  import { t } from '$lib/i18n';
   let { data, form } = $props();
 </script>
 
 <main>
   <section class="story-hero" aria-labelledby="login-title">
     <div>
-      <p class="eyebrow">Equipo del archivo</p>
-      <h1 id="login-title">Acceso privado.</h1>
-      <p class="lead">Este espacio es solo para quienes cuidan, revisan y publican el material del portal.</p>
+      <p class="eyebrow">{$t('auth.loginEyebrow')}</p>
+      <h1 id="login-title">{$t('auth.loginTitle')}</h1>
+      <p class="lead">{$t('auth.loginLead')}</p>
     </div>
-    <img class="hero-mark" src="/identity/kuchumá.png" alt="Silueta de El Cuchumá" />
+    <img class="hero-mark" src="/identity/kuchumá.png" alt={$t('cms.heroImageAlt')} />
   </section>
-  {#if form?.message}<p class="notice error">{form.message}</p>{/if}
+  {#if form?.message}<p class="notice error">{form.message.startsWith('auth.') || form.message.startsWith('errors.') ? $t(form.message) : form.message}</p>{/if}
   <form class="form-stack document-panel" method="POST">
     <input type="hidden" name="csrf" value={data.csrf} />
-    <label>Correo electrónico <input type="email" name="email" autocomplete="email" required /></label>
-    <label>Contraseña <input type="password" name="password" autocomplete="current-password" required /></label>
-    <button type="submit">Entrar</button>
-    <a href="/recover">Recuperar acceso</a>
+    <label>{$t('auth.email')} <input type="email" name="email" autocomplete="email" required /></label>
+    <label>{$t('auth.password')} <input type="password" name="password" autocomplete="current-password" required /></label>
+    <button type="submit">{$t('auth.enter')}</button>
+    <a href="/recover">{$t('auth.recoverAccess')}</a>
   </form>
 </main>
+

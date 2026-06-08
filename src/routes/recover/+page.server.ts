@@ -4,6 +4,7 @@ import { prisma } from '$lib/db/prisma';
 import { sendMail } from '$lib/server/mail';
 import { createToken, sha256 } from '$lib/server/crypto';
 import { audit } from '$lib/server/audit';
+import { translate } from '$lib/i18n';
 
 export const actions = {
   default: async (event) => {
@@ -12,7 +13,7 @@ export const actions = {
     const email = String(data.get('email') || '').trim().toLowerCase();
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || user.suspended) {
-      return { message: 'Si la cuenta existe, se generó una liga de recuperación.' };
+      return { message: 'auth.recoveryLinkGenerated' };
     }
     const token = createToken();
     await prisma.passwordResetToken.create({
@@ -26,12 +27,13 @@ export const actions = {
     const baseUrl = process.env.PUBLIC_SITE_URL || event.url.origin;
     const sent = await sendMail({
       to: user.email,
-      subject: 'Recuperación de contraseña del portal El Cuchumá',
-      text: `Abre esta liga para cambiar tu contraseña: ${baseUrl}/reset/${token}`
+      subject: translate('auth.resetPasswordSubject'),
+      text: translate('auth.resetPasswordBody', { url: `${baseUrl}/reset/${token}` })
     });
     if (!sent && process.env.NODE_ENV !== 'production') {
-      return { message: `Liga de recuperación local: /reset/${token}` };
+      return { message: 'auth.localRecoveryLink', params: { token } };
     }
-    return { message: 'Si la cuenta existe, se envió una liga de recuperación.' };
+    return { message: 'auth.recoveryLinkSent' };
   }
 };
+

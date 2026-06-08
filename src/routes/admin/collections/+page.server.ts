@@ -21,7 +21,7 @@ export const actions = {
     assertCsrf(event, data);
     const title = cleanText(data.get('title'));
     const contributionIds = data.getAll('contributionId').map(cleanText).filter(Boolean);
-    if (!title) return fail(400, { message: 'La colección necesita título.' });
+    if (!title) return fail(400, { message: 'errors.fillAllFields' });
     const collection = await prisma.collection.create({
       data: {
         title,
@@ -33,6 +33,6 @@ export const actions = {
       }
     });
     await audit({ actorId: event.locals.user.id, action: 'create', entity: 'collection', entityId: collection.id, ipAddress: event.getClientAddress() });
-    return { message: 'Colección creada.' };
+    return { message: 'notifications.saved' };
   }
 };

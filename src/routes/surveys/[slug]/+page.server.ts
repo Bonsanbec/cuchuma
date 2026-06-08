@@ -23,9 +23,9 @@ export const actions = {
       where: { slug: event.params.slug },
       include: { options: true }
     });
-    if (!survey || !survey.active) return fail(404, { message: 'Encuesta no disponible.' });
+    if (!survey || !survey.active) return fail(404, { message: 'surveys.notActive' });
     if (!survey.options.some((option) => option.id === optionId)) {
-      return fail(400, { message: 'Selecciona una opción válida.' });
+      return fail(400, { message: 'errors.invalidOption' });
     }
     await prisma.surveyResponse.create({
       data: {
@@ -34,6 +34,6 @@ export const actions = {
         ipHash: hashIp(event.getClientAddress())
       }
     });
-    return { message: 'Voto registrado.' };
+    return { message: 'surveys.voteRegistered' };
   }
 };

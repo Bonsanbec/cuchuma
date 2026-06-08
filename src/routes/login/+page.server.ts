@@ -13,7 +13,7 @@ export const actions = {
     const password = String(data.get('password') || '');
     const user = await prisma.user.findUnique({ where: { email }, include: { role: true } });
     if (!user || user.suspended || !(await verifyPassword(password, user.passwordHash))) {
-      return fail(400, { message: 'Credenciales inválidas.' });
+      return fail(400, { message: 'errors.invalidCredentials' });
     }
     await createSession(user.id, event.cookies);
     await audit({ actorId: user.id, action: 'login', entity: 'user', entityId: user.id, ipAddress: event.getClientAddress() });
