@@ -6,7 +6,7 @@ After=network.target postgresql.service
 Type=simple
 WorkingDirectory=/opt/cuchuma
 Environment=NODE_ENV=production
-Environment=PORT=3000
+Environment=PORT=3001
 EnvironmentFile=/opt/cuchuma/.env
 ExecStart=/usr/bin/node build
 Restart=always
