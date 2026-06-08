@@ -46,5 +46,5 @@ sudo systemctl reload apache2
 ## Despliegues posteriores
 
 ```bash
-APP_DIR=/var/www/cuchuma SERVICE=cuchuma ./scripts/deploy.sh
+APP_DIR=/opt/cuchuma SERVICE=cuchuma ./scripts/deploy.sh
 ```
