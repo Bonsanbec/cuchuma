@@ -82,15 +82,7 @@
   {@render children()}
   {#if !isAdmin}
     <footer class="section" style="margin-top: 4rem; border-top: 1px solid var(--line); padding-block: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-      <p class="meta">{$t('navigation.brandName')} · {$t('hero.eyebrow')}</p>
-      <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-        <a class="meta" href="/login" style="display: inline-flex; align-items: center; gap: 0.25rem;">
-          <i class="bx bx-lock-alt"></i> {$t('navigation.login')}
-        </a>
-        <a class="meta" href="/request-access" style="display: inline-flex; align-items: center; gap: 0.25rem;">
-          <i class="bx bx-user-plus"></i> {$t('auth.requestAccessLink')}
-        </a>
-      </div>
+      <p class="meta">© {$t('navigation.brandName')} {new Date().getFullYear()}</p>
     </footer>
   {/if}
 </div>
