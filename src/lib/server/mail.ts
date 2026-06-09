@@ -7,6 +7,7 @@ export async function sendMail(mail: Mail) {
     return false;
   }
   try {
+    console.error('=== BEFORE SENDMAIL ===');
     const nodemailer = await import('nodemailer');
     const transporter = nodemailer.createTransport({
       host: env.SMTP_HOST,
@@ -27,6 +28,7 @@ export async function sendMail(mail: Mail) {
     const info = await transporter.sendMail({ from: env.MAIL_FROM, ...mail });
     console.log('MAIL SENT');
     console.log(JSON.stringify(info, null, 2));
+    console.error('=== AFTER SENDMAIL ===');
     return true;
   } catch (error) {
     console.error('SMTP Mail sending failed:', error);
