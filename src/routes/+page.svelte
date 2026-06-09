@@ -15,7 +15,7 @@
       </div>
     </div>
     <div>
-      <img class="hero-mark" src="/identity/kuchumá.png" alt={$t('cms.heroImageAlt')} loading="eager" />
+      <img class="hero-mark" src={data.home.heroImageUrl} alt={$t('cms.heroImageAlt')} loading="eager" />
       <div class="first-read" aria-label={$t('hero.essentialSummary')}>
         <p class="field-note"><strong>{$t('hero.whatIs')}</strong><br />{$t('hero.whatIsDesc')}</p>
         <p class="field-note"><strong>{$t('hero.whatHappens')}</strong><br />{$t('hero.whatHappensDesc')}</p>
