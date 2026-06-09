@@ -40,6 +40,11 @@ export const actions = {
       return fail(400, { message: 'errors.requestAlreadyPending' });
     }
 
+    // Delete any old approved/rejected request for this email to bypass the unique constraint
+    await prisma.accessRequest.deleteMany({
+      where: { email }
+    });
+
     // Create the access request
     await prisma.accessRequest.create({
       data: { name, email, motivation, status: 'PENDING' }
