@@ -4,6 +4,7 @@ import { assertCsrf } from '$lib/auth/csrf';
 import { prisma } from '$lib/db/prisma';
 import { cleanText } from '$lib/server/sanitize';
 import { saveUpload } from '$lib/storage';
+import { hashIp } from '$lib/server/crypto';
 
 export async function load({ params }) {
   const form = await prisma.citizenForm.findUnique({
@@ -22,6 +23,31 @@ export const actions = {
       include: { fields: true }
     });
     if (!form || !form.active) return fail(404, { message: 'forms.inactive' });
+
+    const clientIpHash = hashIp(event.getClientAddress());
+    const cookieName = `cuchuma_form_${form.slug}`;
+
+    // 1. Validate if user has already submitted
+    if (event.locals.user) {
+      const existing = await prisma.formResponse.findFirst({
+        where: { formId: form.id, userId: event.locals.user.id }
+      });
+      if (existing) {
+        return fail(400, { message: 'errors.alreadySubmitted' });
+      }
+    } else {
+      // Anonymous checks: cookie and IP
+      if (event.cookies.get(cookieName) === 'submitted') {
+        return fail(400, { message: 'errors.alreadySubmitted' });
+      }
+      const existing = await prisma.formResponse.findFirst({
+        where: { formId: form.id, ipHash: clientIpHash }
+      });
+      if (existing) {
+        return fail(400, { message: 'errors.alreadySubmitted' });
+      }
+    }
+
     const values: Record<string, Prisma.InputJsonValue | null> = {};
     for (const field of form.fields) {
       if (field.type === 'MULTIPLE_CHOICE') {
@@ -40,7 +66,25 @@ export const actions = {
         return fail(400, { message: 'errors.missingField', params: { field: field.label } });
       }
     }
-    await prisma.formResponse.create({ data: { formId: form.id, values: values as Prisma.InputJsonObject } });
+
+    await prisma.formResponse.create({
+      data: {
+        formId: form.id,
+        values: values as Prisma.InputJsonObject,
+        ipHash: clientIpHash,
+        userId: event.locals.user?.id || null
+      }
+    });
+
+    // Set cookie to prevent subsequent anonymous submissions
+    event.cookies.set(cookieName, 'submitted', {
+      path: '/',
+      httpOnly: true,
+      maxAge: 365 * 24 * 60 * 60, // 1 year
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    });
+
     return { message: 'forms.success' };
   }
 };

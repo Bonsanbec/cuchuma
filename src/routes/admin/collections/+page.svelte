@@ -21,10 +21,19 @@
   </form>
   <div class="grid">
     {#each data.collections as collection}
-      <article class="card">
-        <h2><a href={`/collections/${collection.slug}`}>{collection.title}</a></h2>
-        <p>{collection.description}</p>
-        <p class="meta">{collection.published ? $t('admin.collections.published') : $t('admin.collections.private')} · {$t('admin.collections.itemsCount', { count: collection.items.length })}</p>
+      <article class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <h2><a href={`/collections/${collection.slug}`}>{collection.title}</a></h2>
+          <p>{collection.description}</p>
+          <p class="meta">{collection.published ? $t('admin.collections.published') : $t('admin.collections.private')} · {$t('admin.collections.itemsCount', { count: collection.items.length })}</p>
+        </div>
+        <form method="POST" action="?/delete" onsubmit={(e) => { if (!confirm('¿Estás seguro de que deseas eliminar esta colección? Las publicaciones asociadas no serán eliminadas.')) e.preventDefault(); }} style="margin: 0; margin-top: 1rem;">
+          <input type="hidden" name="csrf" value={data.csrf} />
+          <input type="hidden" name="id" value={collection.id} />
+          <button type="submit" class="danger" style="width: 100%; min-height: auto; padding: 0.4rem 0.8rem;">
+            {$t('admin.content.delete')}
+          </button>
+        </form>
       </article>
     {/each}
   </div>

@@ -139,5 +139,31 @@ export const actions = {
     });
 
     return { message: 'admin.users.rejected' };
+  },
+  delete: async (event) => {
+    if (!canAdmin(event.locals.user?.role.level)) throw redirect(303, '/admin');
+    const data = await event.request.formData();
+    assertCsrf(event, data);
+
+    const id = cleanText(data.get('id'));
+    if (!id) return fail(400, { message: 'errors.fillAllFields' });
+
+    if (id === event.locals.user?.id) {
+      return fail(400, { message: 'errors.cannotDeleteSelf' });
+    }
+
+    await prisma.user.delete({
+      where: { id }
+    });
+
+    await audit({
+      actorId: event.locals.user?.id,
+      action: 'delete',
+      entity: 'user',
+      entityId: id,
+      ipAddress: event.getClientAddress()
+    });
+
+    return { message: 'notifications.deleted' };
   }
 };

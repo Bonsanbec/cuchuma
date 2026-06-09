@@ -238,6 +238,7 @@
       "reject": "Rechazar",
       "rejectionReason": "Motivo de rechazo (opcional)",
       "noContent": "No hay contenidos en esta sección.",
+      "noCategories": "No hay categorías configuradas.",
       "saveNote": "Guardar nota",
       "edit": "Editar",
       "delete": "Eliminar"
@@ -246,6 +247,7 @@
       "title": "Formularios ciudadanos",
       "create": "Crear formulario",
       "edit": "Editar formulario",
+      "addField": "Añadir campo",
       "active": "Activo",
       "responses": "Ver respuestas",
       "fields": "Campos",
@@ -254,6 +256,7 @@
       "label": "Etiqueta",
       "required": "Requerido",
       "options": "Opciones separadas por coma",
+      "optionsPlaceholder": "Ej. Opción A, Opción B",
       "save": "Guardar formulario",
       "saveState": "Guardar estado",
       "noForms": "No hay formularios configurados.",
@@ -419,7 +422,9 @@
     "invalidToken": "El token de recuperación no es válido o ha expirado.",
     "passwordMismatch": "Las contraseñas no coinciden.",
     "emailAlreadyRegistered": "Este correo electrónico ya está registrado como usuario.",
-    "requestAlreadyPending": "Ya existe una solicitud pendiente de revisión para este correo."
+    "requestAlreadyPending": "Ya existe una solicitud pendiente de revisión para este correo.",
+    "alreadySubmitted": "Ya has enviado una respuesta a este formulario.",
+    "cannotDeleteSelf": "No puedes eliminar tu propio usuario."
   },
   "validation": {
     "email": "Dirección de correo inválida.",

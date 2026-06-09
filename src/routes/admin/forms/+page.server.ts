@@ -54,5 +54,16 @@ export const actions = {
     const form = await prisma.citizenForm.update({ where: { id: cleanText(data.get('id')) }, data: { active: data.get('active') === 'on' } });
     await audit({ actorId: event.locals.user?.id, action: 'toggle', entity: 'form', entityId: form.id, ipAddress: event.getClientAddress() });
     return { message: 'notifications.updated' };
+  },
+  delete: async (event) => {
+    if (!canModerate(event.locals.user?.role.level)) throw redirect(303, '/admin');
+    const data = await event.request.formData();
+    assertCsrf(event, data);
+    const id = cleanText(data.get('id'));
+    if (!id) return fail(400, { message: 'errors.fillAllFields' });
+
+    await prisma.citizenForm.delete({ where: { id } });
+    await audit({ actorId: event.locals.user?.id, action: 'delete', entity: 'form', entityId: id, ipAddress: event.getClientAddress() });
+    return { message: 'notifications.deleted' };
   }
 };

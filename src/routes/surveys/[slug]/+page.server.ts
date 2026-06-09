@@ -27,13 +27,47 @@ export const actions = {
     if (!survey.options.some((option) => option.id === optionId)) {
       return fail(400, { message: 'errors.invalidOption' });
     }
+    const clientIpHash = hashIp(event.getClientAddress());
+    const cookieName = `cuchuma_survey_${survey.slug}`;
+
+    // Validate if already voted
+    if (event.locals.user) {
+      const existing = await prisma.surveyResponse.findFirst({
+        where: { surveyId: survey.id, userId: event.locals.user.id }
+      });
+      if (existing) {
+        return fail(400, { message: 'surveys.ipVoted' });
+      }
+    } else {
+      if (event.cookies.get(cookieName) === 'voted') {
+        return fail(400, { message: 'surveys.ipVoted' });
+      }
+      const existing = await prisma.surveyResponse.findFirst({
+        where: { surveyId: survey.id, ipHash: clientIpHash }
+      });
+      if (existing) {
+        return fail(400, { message: 'surveys.ipVoted' });
+      }
+    }
+
     await prisma.surveyResponse.create({
       data: {
         surveyId: survey.id,
         optionId,
-        ipHash: hashIp(event.getClientAddress())
+        ipHash: clientIpHash,
+        userId: event.locals.user?.id || null
       }
     });
+
+    // Set cookie to prevent subsequent anonymous votes
+    event.cookies.set(cookieName, 'voted', {
+      path: '/',
+      httpOnly: true,
+      maxAge: 365 * 24 * 60 * 60, // 1 year
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    });
+
     return { message: 'surveys.voteRegistered' };
   }
 };

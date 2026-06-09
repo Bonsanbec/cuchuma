@@ -95,5 +95,41 @@ export const actions = {
     });
     await audit({ actorId: event.locals.user.id, action: 'create', entity: 'reflection', entityId: reflection.id, ipAddress: event.getClientAddress() });
     return { message: 'notifications.saved' };
+  },
+  delete: async (event) => {
+    if (!canModerate(event.locals.user?.role.level)) throw redirect(303, '/admin');
+    const data = await event.request.formData();
+    assertCsrf(event, data);
+
+    const entity = cleanText(data.get('entity'));
+    const id = cleanText(data.get('id'));
+    if (!id || !entity) return fail(400, { message: 'errors.fillAllFields' });
+
+    if (entity === 'contribution') {
+      await prisma.contribution.delete({ where: { id } });
+    } else if (entity === 'article') {
+      await prisma.article.delete({ where: { id } });
+    } else if (entity === 'reflection') {
+      await prisma.reflection.delete({ where: { id } });
+    } else if (entity === 'category') {
+      await prisma.$transaction([
+        prisma.contribution.updateMany({ where: { categoryId: id }, data: { categoryId: null } }),
+        prisma.article.updateMany({ where: { categoryId: id }, data: { categoryId: null } }),
+        prisma.reflection.updateMany({ where: { categoryId: id }, data: { categoryId: null } }),
+        prisma.category.delete({ where: { id } })
+      ]);
+    } else {
+      return fail(400, { message: 'errors.invalidEntity' });
+    }
+
+    await audit({
+      actorId: event.locals.user?.id,
+      action: 'delete',
+      entity,
+      entityId: id,
+      ipAddress: event.getClientAddress()
+    });
+
+    return { message: 'notifications.deleted' };
   }
 };

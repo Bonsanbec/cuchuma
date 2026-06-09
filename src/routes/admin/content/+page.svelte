@@ -28,15 +28,51 @@
       <button type="submit">{$t('admin.content.publish')}</button>
     </form>
   </div>
-  <form class="card form-stack" method="POST" action="?/category">
-    <input type="hidden" name="csrf" value={data.csrf} />
+  <div class="card" style="margin-top: 1.5rem;">
     <h2>{$t('admin.content.categories')}</h2>
-    <div class="two-col">
-      <label>{$t('admin.users.name')} <input name="name" required /></label>
-      <label>{$t('admin.collections.description')} <input name="description" /></label>
+    <form class="form-stack" method="POST" action="?/category" style="margin-bottom: 1.5rem;">
+      <input type="hidden" name="csrf" value={data.csrf} />
+      <div class="two-col">
+        <label>{$t('admin.users.name')} <input name="name" required /></label>
+        <label>{$t('admin.collections.description')} <input name="description" /></label>
+      </div>
+      <button type="submit">{$t('admin.content.saveCategory')}</button>
+    </form>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{$t('admin.users.name')}</th>
+            <th>{$t('admin.collections.description')}</th>
+            <th>{$t('admin.content.table.actions')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each data.categories as category}
+            <tr>
+              <td><strong>{category.name}</strong><br /><span class="meta">{category.slug}</span></td>
+              <td>{category.description ?? ''}</td>
+              <td>
+                <form method="POST" action="?/delete" onsubmit={(e) => { if (!confirm('¿Estás seguro de que deseas eliminar esta categoría? Las publicaciones asociadas no se eliminarán, pero se quedarán sin categoría.')) e.preventDefault(); }} style="margin: 0;">
+                  <input type="hidden" name="csrf" value={data.csrf} />
+                  <input type="hidden" name="entity" value="category" />
+                  <input type="hidden" name="id" value={category.id} />
+                  <button type="submit" class="danger" style="padding: 0.3rem 0.6rem; min-height: auto; font-size: 0.8rem;">
+                    {$t('admin.content.delete')}
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {:else}
+            <tr>
+              <td colspan="3" class="meta">{$t('admin.content.noCategories')}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     </div>
-    <button type="submit">{$t('admin.content.saveCategory')}</button>
-  </form>
+  </div>
   <div class="table-wrap">
     <table>
       <thead><tr><th>{$t('admin.content.tableContent')}</th><th>{$t('admin.content.table.status')}</th><th>{$t('admin.content.table.actions')}</th></tr></thead>
@@ -50,6 +86,14 @@
                 <a class="button secondary" href={`/admin/edit/contribution/${item.id}`} style="padding: 0.4rem 0.8rem; min-height: auto;">
                   {$t('admin.content.edit')}
                 </a>
+                <form method="POST" action="?/delete" onsubmit={(e) => { if (!confirm('¿Estás seguro de que deseas eliminar esta aportación?')) e.preventDefault(); }} style="margin: 0; display: inline-block;">
+                  <input type="hidden" name="csrf" value={data.csrf} />
+                  <input type="hidden" name="entity" value="contribution" />
+                  <input type="hidden" name="id" value={item.id} />
+                  <button type="submit" class="danger" style="padding: 0.4rem 0.8rem; min-height: auto;">
+                    {$t('admin.content.delete')}
+                  </button>
+                </form>
               </div>
               <form method="POST" action="?/moderate" class="form-stack">
                 <input type="hidden" name="csrf" value={data.csrf} /><input type="hidden" name="entity" value="contribution" /><input type="hidden" name="id" value={item.id} />
@@ -67,7 +111,7 @@
             <td>{item.title}<br /><span class="meta">{$t('admin.content.article')} · {item.outlet}</span></td>
             <td>{item.status}</td>
             <td>
-              <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                 <a class="button secondary" href={`/admin/edit/article/${item.id}`} style="padding: 0.4rem 0.8rem; min-height: auto;">
                   {$t('admin.content.edit')}
                 </a>
@@ -75,6 +119,14 @@
                   <input type="hidden" name="csrf" value={data.csrf} /><input type="hidden" name="entity" value="article" /><input type="hidden" name="id" value={item.id} />
                   <button name="status" value="APPROVED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.approve')}</button>
                   <button class="danger" name="status" value="REJECTED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.reject')}</button>
+                </form>
+                <form method="POST" action="?/delete" onsubmit={(e) => { if (!confirm('¿Estás seguro de que deseas eliminar esta nota periodística?')) e.preventDefault(); }} style="margin: 0; display: inline-block;">
+                  <input type="hidden" name="csrf" value={data.csrf} />
+                  <input type="hidden" name="entity" value="article" />
+                  <input type="hidden" name="id" value={item.id} />
+                  <button type="submit" class="danger" style="padding: 0.4rem 0.8rem; min-height: auto;">
+                    {$t('admin.content.delete')}
+                  </button>
                 </form>
               </div>
             </td>
@@ -85,7 +137,7 @@
             <td>{item.title}<br /><span class="meta">{$t('admin.content.reflection')}</span></td>
             <td>{item.status}</td>
             <td>
-              <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                 <a class="button secondary" href={`/admin/edit/reflection/${item.id}`} style="padding: 0.4rem 0.8rem; min-height: auto;">
                   {$t('admin.content.edit')}
                 </a>
@@ -93,6 +145,14 @@
                   <input type="hidden" name="csrf" value={data.csrf} /><input type="hidden" name="entity" value="reflection" /><input type="hidden" name="id" value={item.id} />
                   <button name="status" value="APPROVED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.approve')}</button>
                   <button class="danger" name="status" value="REJECTED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.reject')}</button>
+                </form>
+                <form method="POST" action="?/delete" onsubmit={(e) => { if (!confirm('¿Estás seguro de que deseas eliminar esta reflexión?')) e.preventDefault(); }} style="margin: 0; display: inline-block;">
+                  <input type="hidden" name="csrf" value={data.csrf} />
+                  <input type="hidden" name="entity" value="reflection" />
+                  <input type="hidden" name="id" value={item.id} />
+                  <button type="submit" class="danger" style="padding: 0.4rem 0.8rem; min-height: auto;">
+                    {$t('admin.content.delete')}
+                  </button>
                 </form>
               </div>
             </td>

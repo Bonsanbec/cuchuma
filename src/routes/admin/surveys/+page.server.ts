@@ -20,7 +20,7 @@ export const actions = {
     const data = await event.request.formData();
     assertCsrf(event, data);
     const title = cleanText(data.get('title'));
-    const options = cleanText(data.get('options')).split('\n').map((item) => item.trim()).filter(Boolean);
+    const options = data.getAll('options').map(cleanText).map((item) => item.trim()).filter(Boolean);
     if (!title || options.length < 2) return fail(400, { message: 'errors.invalidSurveyConfig' });
     const survey = await prisma.survey.create({
       data: {
@@ -46,5 +46,16 @@ export const actions = {
     });
     await audit({ actorId: event.locals.user?.id, action: 'toggle', entity: 'survey', entityId: survey.id, ipAddress: event.getClientAddress() });
     return { message: 'notifications.updated' };
+  },
+  delete: async (event) => {
+    if (!canModerate(event.locals.user?.role.level)) throw redirect(303, '/admin');
+    const data = await event.request.formData();
+    assertCsrf(event, data);
+    const id = cleanText(data.get('id'));
+    if (!id) return fail(400, { message: 'errors.fillAllFields' });
+
+    await prisma.survey.delete({ where: { id } });
+    await audit({ actorId: event.locals.user?.id, action: 'delete', entity: 'survey', entityId: id, ipAddress: event.getClientAddress() });
+    return { message: 'notifications.deleted' };
   }
 };

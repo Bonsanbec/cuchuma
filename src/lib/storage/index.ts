@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, unlink } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 import type { MediaKind } from '@prisma/client';
 import { env } from '$env/dynamic/private';
@@ -47,4 +47,14 @@ export async function saveUpload(file: File) {
     originalName: file.name,
     kind: mediaKind(file.type)
   };
+}
+
+export async function deleteUpload(storageKey: string) {
+  const root = env.LOCAL_STORAGE_ROOT || './static/uploads';
+  const target = join(root, storageKey);
+  try {
+    await unlink(target);
+  } catch (e) {
+    console.error(`Error deleting file: ${target}`, e);
+  }
 }

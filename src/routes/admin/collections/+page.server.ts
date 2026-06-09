@@ -34,5 +34,16 @@ export const actions = {
     });
     await audit({ actorId: event.locals.user.id, action: 'create', entity: 'collection', entityId: collection.id, ipAddress: event.getClientAddress() });
     return { message: 'notifications.saved' };
+  },
+  delete: async (event) => {
+    if (!canModerate(event.locals.user?.role.level)) throw redirect(303, '/admin');
+    const data = await event.request.formData();
+    assertCsrf(event, data);
+    const id = cleanText(data.get('id'));
+    if (!id) return fail(400, { message: 'errors.fillAllFields' });
+
+    await prisma.collection.delete({ where: { id } });
+    await audit({ actorId: event.locals.user?.id, action: 'delete', entity: 'collection', entityId: id, ipAddress: event.getClientAddress() });
+    return { message: 'notifications.deleted' };
   }
 };

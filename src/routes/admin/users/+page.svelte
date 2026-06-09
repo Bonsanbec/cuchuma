@@ -75,7 +75,18 @@
                 </form>
               </td>
               <td>{user.suspended ? $t('admin.users.suspended') : $t('admin.users.active')}</td>
-              <td class="meta">{new Date(user.createdAt).toLocaleDateString('es-MX')}</td>
+              <td class="meta">
+                <div>{new Date(user.createdAt).toLocaleDateString('es-MX')}</div>
+                {#if user.id !== data.user?.id}
+                  <form method="POST" action="?/delete" onsubmit={(e) => { if (!confirm('¿Estás seguro de que deseas eliminar a este usuario? Esta acción es irreversible y se eliminarán todas sus aportaciones asociadas.')) e.preventDefault(); }} style="margin-top: 0.5rem;">
+                    <input type="hidden" name="csrf" value={data.csrf} />
+                    <input type="hidden" name="id" value={user.id} />
+                    <button type="submit" class="danger" style="padding: 0.3rem 0.6rem; min-height: auto; font-size: 0.8rem;">
+                      {$t('admin.content.delete')}
+                    </button>
+                  </form>
+                {/if}
+              </td>
             </tr>
           {/each}
         </tbody>

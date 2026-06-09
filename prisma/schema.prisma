@@ -59,6 +59,8 @@ model User {
   forms          CitizenForm[]
   surveys        Survey[]
   collections    Collection[]
+  surveyResponses SurveyResponse[]
+  formResponses  FormResponse[]
   auditLogs      AuditLog[]      @relation("ActorAuditLogs")
   reviewedItems  Contribution[]  @relation("ReviewedContributions")
   resetTokens     PasswordResetToken[]
@@ -116,7 +118,7 @@ model Contribution {
   status        ContentStatus     @default(PENDING)
   rejectionNote String?
   authorId      String
-  author        User              @relation(fields: [authorId], references: [id])
+  author        User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
   reviewerId    String?
   reviewer      User?             @relation("ReviewedContributions", fields: [reviewerId], references: [id])
   categoryId    String?
@@ -140,7 +142,7 @@ model MediaFile {
   originalName    String
   altText         String?
   authorId        String
-  author          User            @relation(fields: [authorId], references: [id])
+  author          User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
   contributionId  String?
   contribution    Contribution?   @relation(fields: [contributionId], references: [id], onDelete: SetNull)
   createdAt       DateTime        @default(now())
@@ -158,7 +160,7 @@ model Article {
   summary     String
   status      ContentStatus @default(PENDING)
   createdById String
-  createdBy   User          @relation(fields: [createdById], references: [id])
+  createdBy   User          @relation(fields: [createdById], references: [id], onDelete: Cascade)
   categoryId  String?
   category    Category?     @relation(fields: [categoryId], references: [id])
   createdAt   DateTime      @default(now())
@@ -172,7 +174,7 @@ model Reflection {
   body        String
   status      ContentStatus @default(PENDING)
   createdById String
-  createdBy   User          @relation(fields: [createdById], references: [id])
+  createdBy   User          @relation(fields: [createdById], references: [id], onDelete: Cascade)
   categoryId  String?
   category    Category?     @relation(fields: [categoryId], references: [id])
   createdAt   DateTime      @default(now())
@@ -187,7 +189,7 @@ model Collection {
   description String
   published   Boolean          @default(true)
   createdById String
-  createdBy   User             @relation(fields: [createdById], references: [id])
+  createdBy   User             @relation(fields: [createdById], references: [id], onDelete: Cascade)
   items       CollectionItem[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
@@ -211,7 +213,7 @@ model CitizenForm {
   description String
   active      Boolean          @default(true)
   createdById String
-  createdBy   User             @relation(fields: [createdById], references: [id])
+  createdBy   User             @relation(fields: [createdById], references: [id], onDelete: Cascade)
   fields      FormField[]
   responses   FormResponse[]
   createdAt   DateTime         @default(now())
@@ -235,6 +237,9 @@ model FormResponse {
   form      CitizenForm @relation(fields: [formId], references: [id], onDelete: Cascade)
   values    Json
   createdAt DateTime    @default(now())
+  ipHash    String?
+  userId    String?
+  user      User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model Survey {
@@ -246,7 +251,7 @@ model Survey {
   resultsPublic   Boolean          @default(true)
   active          Boolean          @default(true)
   createdById     String
-  createdBy       User             @relation(fields: [createdById], references: [id])
+  createdBy       User             @relation(fields: [createdById], references: [id], onDelete: Cascade)
   responses       SurveyResponse[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -269,6 +274,8 @@ model SurveyResponse {
   option    SurveyOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
   createdAt DateTime     @default(now())
   ipHash    String?
+  userId    String?
+  user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model SiteSetting {
