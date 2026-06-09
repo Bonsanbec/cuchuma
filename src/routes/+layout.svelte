@@ -25,7 +25,7 @@
   <header class:admin-topbar={isAdmin} class="topbar">
     <a class="brand" href="/" aria-label={$t('navigation.goToCover')}>
       <img src="/identity/kuchumá.png" alt="" />
-      <span>{$t('navigation.brandName')}</span>
+      <span>{$t('navigation.title')}</span>
     </a>
     {#if isAdmin}
       <nav aria-label={$t('navigation.adminNav', { defaultValue: 'Navegación administrativa' })}>
