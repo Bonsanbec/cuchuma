@@ -15,6 +15,7 @@
 
 <svelte:head>
   <title>{$t('cms.causeName')}</title>
+  <link rel="icon" type="image/x-icon" href={data.site.heroImageUrl}>
   <meta name="description" content={$t('cms.problemSummary')} />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
