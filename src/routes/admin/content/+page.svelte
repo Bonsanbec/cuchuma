@@ -46,19 +46,57 @@
             <td>{item.title}<br /><span class="meta">{$t('admin.content.contribution')} · {item.author.name} · {item.category?.name ?? $t('admin.content.noCategory')}</span></td>
             <td>{item.status}</td>
             <td>
+              <div style="display: flex; gap: 0.5rem; align-items: start; margin-bottom: 0.5rem;">
+                <a class="button secondary" href={`/admin/edit/contribution/${item.id}`} style="padding: 0.4rem 0.8rem; min-height: auto;">
+                  {$t('admin.content.edit')}
+                </a>
+              </div>
               <form method="POST" action="?/moderate" class="form-stack">
                 <input type="hidden" name="csrf" value={data.csrf} /><input type="hidden" name="entity" value="contribution" /><input type="hidden" name="id" value={item.id} />
-                <textarea name="rejectionNote"></textarea>
-                <button name="status" value="APPROVED">{$t('admin.content.approve')}</button><button class="danger" name="status" value="REJECTED">{$t('admin.content.reject')}</button>
+                <textarea name="rejectionNote" placeholder={$t('admin.content.rejectionReason')}></textarea>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button name="status" value="APPROVED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.approve')}</button>
+                  <button class="danger" name="status" value="REJECTED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.reject')}</button>
+                </div>
               </form>
             </td>
           </tr>
         {/each}
         {#each data.articles as item}
-          <tr><td>{item.title}<br /><span class="meta">{$t('admin.content.article')} · {item.outlet}</span></td><td>{item.status}</td><td><form method="POST" action="?/moderate"><input type="hidden" name="csrf" value={data.csrf} /><input type="hidden" name="entity" value="article" /><input type="hidden" name="id" value={item.id} /><button name="status" value="APPROVED">{$t('admin.content.approve')}</button> <button class="danger" name="status" value="REJECTED">{$t('admin.content.reject')}</button></form></td></tr>
+          <tr>
+            <td>{item.title}<br /><span class="meta">{$t('admin.content.article')} · {item.outlet}</span></td>
+            <td>{item.status}</td>
+            <td>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <a class="button secondary" href={`/admin/edit/article/${item.id}`} style="padding: 0.4rem 0.8rem; min-height: auto;">
+                  {$t('admin.content.edit')}
+                </a>
+                <form method="POST" action="?/moderate" style="margin: 0; display: inline-flex; gap: 0.5rem;">
+                  <input type="hidden" name="csrf" value={data.csrf} /><input type="hidden" name="entity" value="article" /><input type="hidden" name="id" value={item.id} />
+                  <button name="status" value="APPROVED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.approve')}</button>
+                  <button class="danger" name="status" value="REJECTED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.reject')}</button>
+                </form>
+              </div>
+            </td>
+          </tr>
         {/each}
         {#each data.reflections as item}
-          <tr><td>{item.title}<br /><span class="meta">{$t('admin.content.reflection')}</span></td><td>{item.status}</td><td><form method="POST" action="?/moderate"><input type="hidden" name="csrf" value={data.csrf} /><input type="hidden" name="entity" value="reflection" /><input type="hidden" name="id" value={item.id} /><button name="status" value="APPROVED">{$t('admin.content.approve')}</button> <button class="danger" name="status" value="REJECTED">{$t('admin.content.reject')}</button></form></td></tr>
+          <tr>
+            <td>{item.title}<br /><span class="meta">{$t('admin.content.reflection')}</span></td>
+            <td>{item.status}</td>
+            <td>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <a class="button secondary" href={`/admin/edit/reflection/${item.id}`} style="padding: 0.4rem 0.8rem; min-height: auto;">
+                  {$t('admin.content.edit')}
+                </a>
+                <form method="POST" action="?/moderate" style="margin: 0; display: inline-flex; gap: 0.5rem;">
+                  <input type="hidden" name="csrf" value={data.csrf} /><input type="hidden" name="entity" value="reflection" /><input type="hidden" name="id" value={item.id} />
+                  <button name="status" value="APPROVED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.approve')}</button>
+                  <button class="danger" name="status" value="REJECTED" style="padding: 0.4rem 0.8rem; min-height: auto;">{$t('admin.content.reject')}</button>
+                </form>
+              </div>
+            </td>
+          </tr>
         {/each}
       </tbody>
     </table>

@@ -18,7 +18,10 @@
     <label>{$t('auth.email')} <input type="email" name="email" autocomplete="email" required /></label>
     <label>{$t('auth.password')} <input type="password" name="password" autocomplete="current-password" required /></label>
     <button type="submit">{$t('auth.enter')}</button>
-    <a href="/recover">{$t('auth.recoverAccess')}</a>
+    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem;">
+      <a href="/recover" class="meta">{$t('auth.recoverAccess')}</a>
+      <a href="/request-access" class="meta">{$t('auth.requestAccessLink')}</a>
+    </div>
   </form>
 </main>
 

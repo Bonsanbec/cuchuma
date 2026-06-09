@@ -38,14 +38,31 @@
       </nav>
     {:else}
       <nav aria-label={$t('navigation.publicNav', { defaultValue: 'Navegación pública' })}>
-        <a href="/#que-pasa">{$t('navigation.whatIsHappening')}</a>
-        <a href="/#por-que-importa">{$t('navigation.whyItMatters')}</a>
-        <a href="/archive">{$t('navigation.documented')}</a>
-        <a href="/#memoria">{$t('navigation.memory')}</a>
-        <a class="nav-action" href="/#ayudar">{$t('navigation.help')}</a>
+        {#if data.menu && data.menu.length > 0}
+          {#each data.menu as item}
+            <a href={item.href} class={item.href === '/#ayudar' || item.href === '/contribute' ? 'nav-action' : ''}>
+              {$t('menu.' + item.id, { defaultValue: item.label })}
+            </a>
+          {/each}
+        {:else}
+          <a href="/#que-pasa">{$t('navigation.whatIsHappening')}</a>
+          <a href="/#por-que-importa">{$t('navigation.whyItMatters')}</a>
+          <a href="/archive">{$t('navigation.documented')}</a>
+          <a href="/#memoria">{$t('navigation.memory')}</a>
+          <a class="nav-action" href="/#ayudar">{$t('navigation.help')}</a>
+        {/if}
       </nav>
     {/if}
   </header>
   {@render children()}
+  {#if !isAdmin}
+    <footer class="section" style="margin-top: 4rem; border-top: 1px solid var(--line); padding-block: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+      <p class="meta">{$t('navigation.brandName')} · {$t('hero.eyebrow')}</p>
+      <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+        <a class="meta" href="/login">{$t('navigation.login')}</a>
+        <a class="meta" href="/request-access">{$t('auth.requestAccessLink')}</a>
+      </div>
+    </footer>
+  {/if}
 </div>
 
