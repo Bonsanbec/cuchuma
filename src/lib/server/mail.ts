@@ -24,9 +24,7 @@ export async function sendMail(mail: Mail) {
       greetingTimeout: 5000,
       socketTimeout: 5000
     });
-    const info = await transporter.sendMail({ from: env.MAIL_FROM, ...mail });
-    console.log('MAIL SENT');
-    console.log(JSON.stringify(info, null, 2));
+    await transporter.sendMail({ from: env.MAIL_FROM, ...mail });
     return true;
   } catch (error) {
     console.error('SMTP Mail sending failed:', error);
