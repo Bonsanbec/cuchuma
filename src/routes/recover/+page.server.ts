@@ -28,7 +28,7 @@ export const actions = {
     const sent = await sendMail({
       to: user.email,
       subject: translate('auth.resetPasswordSubject'),
-      text: translate('auth.resetPasswordBody', { url: `${baseUrl}/reset/${token}` })
+      html: translate('auth.resetPasswordBody', { url: `${baseUrl}/reset/${token}` })
     });
     if (!sent && process.env.NODE_ENV !== 'production') {
       return { message: 'auth.localRecoveryLink', params: { token } };

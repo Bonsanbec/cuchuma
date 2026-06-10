@@ -109,7 +109,7 @@ export const actions = {
     await sendMail({
       to: newUser.email,
       subject: translate('auth.resetPasswordSubject'),
-      text: translate('auth.resetPasswordBody', { url: resetUrl })
+      html: translate('auth.resetPasswordBody', { url: resetUrl })
     });
 
     return {

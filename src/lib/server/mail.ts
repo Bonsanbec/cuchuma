@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private';
 
-type Mail = { to: string; subject: string; text: string };
+type Mail = { to: string; subject: string; html: string };
 
 export async function sendMail(mail: Mail) {
   if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASSWORD || !env.MAIL_FROM) {
